@@ -1,6 +1,6 @@
-# HomeCe analysis code
+# MCG UGIL diagnostic accuracy analysis
 
-R scripts for evaluating the diagnostic performance of HomeCe against oesophagogastroduodenoscopy (OGD), including subgroup analyses and paired comparisons of manual and AI-assisted keyframe reading.
+R scripts for evaluating the diagnostic accuracy of mobile capsule gastroscopy (MCG) for upper gastrointestinal lesions (UGILs) against oesophagogastroduodenoscopy (OGD), including subgroup analyses and paired comparisons of manual and AI-assisted keyframe reading.
 
 ## Files
 
