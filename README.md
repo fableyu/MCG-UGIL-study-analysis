@@ -24,7 +24,9 @@ install.packages(c("readxl", "dplyr", "writexl", "DTComPair"))
 
 ## Input data
 
-The source Excel workbook is **not included** in this repository. These scripts target the final study workbook, containing 475 paired participants and 798 lesion records, and validate its structure and analysis populations. They are not generic scripts for arbitrary workbooks.
+Deidentified participant data in the source Excel workbook and associated documentation will be made available to researchers for any reasonable purpose, subject to a data use agreement, after completion and publication of all preplanned analyses. Requests should be directed to Xiaobei Luo or James Yun Wong Lau, the corresponding authors.
+
+These scripts target the final study workbook, containing 475 paired participants and 798 lesion records, and validate its structure and analysis populations. They are not generic scripts for arbitrary workbooks.
 
 Required worksheets include:
 
