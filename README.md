@@ -39,9 +39,7 @@ The required worksheets are:
 - `4.visualisation rates`
 - `5.Examination time of MCG`
 
-Worksheet order, leading worksheet numbering (with or without a full stop) and surrounding spaces do not affect sheet matching. Reading-time headers are accepted with or without the explicit `(min)` suffix. Rows without an ID are excluded. The workbook must contain 906 screened individuals, 482 enrolled individuals, 475 paired evaluable participants and 798 lesion records; the safety set contains 481 participants and the duodenal PPS contains 420.
-
-Participant-level data are not included in this code package. The dataset repository and DOI will be added after data deposition. Access statements in the article must reflect the actual deposition and public-access status.
+Participant-level data are not included in this code package.
 
 ## Run
 
@@ -62,10 +60,6 @@ Quote paths containing spaces. Omit the second argument to write results to `res
 | `02_subgroup_analysis.R` | Clinically important UGILs and indication subgroups | `subgroups/` |
 | `03_reading_mode_comparison.R` | Paired diagnostic differences, non-inferiority, kappa and reading times | `reading_mode_comparison/` |
 | `04_non_diagnostic_analysis.R` | Sample size, recruitment flow, baseline characteristics, procedural status, visualisation, examination durations, comfort, excretion and safety | `non_diagnostic_results.xlsx` |
-
-Main Tables 1-4 are covered by these outputs. Participant flow for Figure 2 is in `Study_flow`; lesion counts underlying Figure 3 and the missed-lesion descriptions are in the primary per-lesion outputs and `Lesion_descriptives`. Schematics, endoscopy images, lesion-size measurements and oesophagitis grades are not generated from this workbook.
-
-Each run records the input MD5 checksum and `sessionInfo()`. Output files with the same names are overwritten on rerun. Use a separate output directory to retain an earlier run. Generated workbooks contain participant-level data and should not be committed to GitHub.
 
 ## Statistical conventions
 
