@@ -1,4 +1,4 @@
-# HomeCe: paired comparison of AI-assisted and manual reading against OGD.
+# MCG: paired comparison of AI-assisted and manual reading against OGD.
 # Usage: Rscript 03_reading_mode_comparison.R input.xlsx [output_directory]
 # Differences are AI minus manual. Proportion differences are on the 0-1 scale.
 

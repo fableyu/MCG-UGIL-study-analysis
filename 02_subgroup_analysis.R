@@ -1,4 +1,4 @@
-# HomeCe: clinically important lesions and indication subgroups (manual reading).
+# MCG: clinically important lesions and indication subgroups (manual reading).
 # Usage: Rscript 02_subgroup_analysis.R input.xlsx [output_directory]
 # Group membership and clinical importance are read from the source workbook.
 

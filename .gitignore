@@ -1,16 +1,15 @@
-# Local R session and editor files
+# Participant-level inputs and generated results
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.rds
+/data/
+/results/
+
+# Local R and operating-system files
 .Rhistory
 .RData
 .Ruserdata
 .Rproj.user/
 .DS_Store
-
-# Source workbooks and generated analysis outputs
-*.xlsx
-*.xls
-*.xlsm
-~$*
-/results/
-/data/
-/sessionInfo.txt
-/input_checksum.csv

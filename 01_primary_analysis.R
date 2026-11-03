@@ -1,6 +1,6 @@
-# HomeCe: diagnostic performance against OGD.
+# MCG: diagnostic performance against OGD.
 # Usage: Rscript 01_primary_analysis.R input.xlsx [output_directory]
-# This file also supplies shared functions to scripts 02 and 03.
+# This file also supplies shared functions to the other analysis scripts.
 
 suppressPackageStartupMessages({
   library(readxl)
@@ -28,22 +28,28 @@ homece_init <- function() {
   list(raw=raw, output=output)
 }
 
-# IDs are five-character strings; empty worksheet rows are ignored.
-read_homece <- function(sheet, id_col="ID") {
+# Worksheet numbering and surrounding spaces do not change a sheet's identity.
+read_workbook_sheet <- function(sheet, id_col="ID", pattern="^[0-9]{5}$") {
   sheets <- readxl::excel_sheets(rawdata_path)
   # Worksheet numbering is cosmetic; require a unique matching sheet label.
-  sheet_key <- function(x) sub("^[0-9]+[.]", "", trimws(x))
+  sheet_key <- function(x) trimws(sub("^[0-9]+[.]?[[:space:]]*", "", trimws(x)))
   matches <- sheets[sheet_key(sheets) == sheet_key(sheet)]
   if (length(matches) != 1L) stop("Missing or ambiguous worksheet: ", sheet)
-  x <- readxl::read_excel(rawdata_path, sheet=matches)
+  x <- readxl::read_excel(rawdata_path, sheet=matches, .name_repair="minimal")
   names(x) <- trimws(names(x))
-  stopifnot(id_col %in% names(x))
+  # Reading-time headers may explicitly include their unchanged minute unit.
+  if (sheet_key(sheet) == "reading time")
+    names(x) <- sub("^(manual reading|AI keyframe reading) [(]min[)]$", "\\1", names(x))
+  if (sum(names(x) == id_col) != 1L) stop("Missing or duplicate ID column in sheet: ", sheet)
   x[[id_col]] <- trimws(as.character(x[[id_col]]))
   populated <- !is.na(x[[id_col]]) & nzchar(x[[id_col]])
-  if (any(populated & !grepl("^[0-9]{5}$", x[[id_col]]))) stop("Invalid participant ID in sheet: ", sheet)
+  if (any(populated & !grepl(pattern, x[[id_col]]))) stop("Invalid ID in sheet: ", sheet)
   x <- x[populated, , drop=FALSE]
   x
 }
+
+# Participant IDs are five-character strings; rows without IDs are excluded.
+read_homece <- function(sheet, id_col="ID") read_workbook_sheet(sheet, id_col)
 
 
 # Delta-method kappa interval for duodenal analyses.
