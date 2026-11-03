@@ -18,7 +18,7 @@ dir.create(output, recursive = TRUE, showWarnings = FALSE)
 output <- normalizePath(output, mustWork = TRUE)
 
 scripts <- c("01_primary_analysis.R", "02_subgroup_analysis.R",
-             "03_reading_mode_comparison.R", "04_non_diagnostic_analysis.R")
+             "03_reading_mode_comparison.R", "04_other_analyses.R")
 for (script in scripts) {
   status <- system2(file.path(R.home("bin"), "Rscript"),
                     c("--vanilla", shQuote(file.path(code_dir, script)), shQuote(input), shQuote(output)))

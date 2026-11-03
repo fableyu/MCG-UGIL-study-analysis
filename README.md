@@ -2,7 +2,7 @@
 
 Repository: [https://github.com/fableyu/MCG-UGIL-study-analysis](https://github.com/fableyu/MCG-UGIL-study-analysis).
 
-R code for the diagnostic and non-diagnostic numerical analyses of mobile capsule gastroscopy (MCG) for upper gastrointestinal lesions (UGILs), using oesophagogastroduodenoscopy (OGD) as the reference standard.
+R scripts for statistical analyses of the multicentre study evaluating mobile capsule gastroscopy (MCG) for upper gastrointestinal lesions (UGILs).
 
 ## Requirements
 
@@ -59,7 +59,7 @@ Quote paths containing spaces. Omit the second argument to write results to `res
 | `01_primary_analysis.R` | Overall, organ-level, disease-specific and per-lesion diagnostic performance; duodenal FAS/PPS | `primary/` |
 | `02_subgroup_analysis.R` | Clinically important UGILs and indication subgroups | `subgroups/` |
 | `03_reading_mode_comparison.R` | Paired diagnostic differences, non-inferiority, kappa and reading times | `reading_mode_comparison/` |
-| `04_non_diagnostic_analysis.R` | Sample size, recruitment flow, baseline characteristics, procedural status, visualisation, examination durations, comfort, excretion and safety | `non_diagnostic_results.xlsx` |
+| `04_other_analyses.R` | Sample size, recruitment flow, baseline characteristics, procedural status, visualisation, examination durations, comfort, excretion and safety | `non_diagnostic_results.xlsx` |
 
 ## Statistical conventions
 
