@@ -21,7 +21,7 @@ scripts <- c("01_primary_analysis.R", "02_subgroup_analysis.R",
              "03_reading_mode_comparison.R", "04_non_diagnostic_analysis.R")
 for (script in scripts) {
   status <- system2(file.path(R.home("bin"), "Rscript"),
-                    c(shQuote(file.path(code_dir, script)), shQuote(input), shQuote(output)))
+                    c("--vanilla", shQuote(file.path(code_dir, script)), shQuote(input), shQuote(output)))
   if (status != 0L) stop("Analysis failed: ", script)
 }
 cat("All analyses completed. Results:", output, "\n")

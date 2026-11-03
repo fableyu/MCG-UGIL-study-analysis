@@ -24,7 +24,7 @@ The Excel workbook is the sole analysis input. Worksheet order and leading numer
 - `Capsule Elimination Time`: recorded days. In two source notes, natural expulsion was not observed and the recorded day represents last defecation before radiographic confirmation. Preserve these records and their notes.
 - Comfort and operational convenience: 1=Excellent; 2=Good; 3=Poor.
 - `Observed excretion time category`: derived from recorded days and the unobserved-expulsion note. Script 04 recalculates the category and checks it against the source column.
-- `MCG examination time` and the legacy header `EGD examination time`: paired timestamps. The latter refers to OGD as named in the article. Elapsed time is calculated in minutes. The supplied timestamps are not shifted or replaced.
+- `MCG examination time` and `OGD examination time`: paired timestamps. The legacy header `EGD examination time` is also accepted. Elapsed time is calculated in minutes. The supplied timestamps are not shifted or replaced.
 
 ## Withdrawals and events
 
@@ -48,4 +48,4 @@ The Excel workbook is the sole analysis input. Worksheet order and leading numer
 
 The optional `1.procedural steps` sheet is a derived view of `Self-administered Results`. Under the author-confirmed rule, known source statuses identify only water/posture deviations; other routine steps are classified as completed. The sheet preserves source IDs and the source status alongside the derived columns. It must not be represented as a separate set of directly observed step logs.
 
-`Response to water guidance` uses `No deviation recorded`. The source does not establish whether an AI prompt was actually issued, so prompt-issued and no-prompt counts are not inferred.
+`Response to water guidance` uses the investigator-confirmed individual-record result: all participants received and completed the AI water prompt. This confirmation supplements the overall procedural-status coding; it is not inferred solely from the word Normal.

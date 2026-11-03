@@ -72,13 +72,13 @@ Quote paths containing spaces. Omit the second argument to write results to `res
 
 ## Data provenance and current checks
 
-Routine procedural steps are derived from the overall self-administration status under an author-confirmed rule: the recorded statuses identify water/posture deviations; other routine steps are classified as completed. The derived records are exported for inspection. They are not separate step-level observations. “No deviation recorded” does not establish whether an AI prompt was issued.
+Routine procedural steps are derived from the recorded self-administration status under the author-confirmed coding rule. Investigators separately confirmed from individual records that all participants received and followed the AI water prompts.
 
-The original all-participant calculation of recorded excretion days is retained. Two source notes state that natural expulsion was not observed and the recorded days represent last defecation before radiographic confirmation. Those values have not been altered; interpretation of the mean requires alignment with the source records and Supplementary Methods.
+Excretion-time summaries follow Supplementary Methods, including the estimated time from the last bowel movement before radiography for the two unobserved-expulsion records.
 
 `Chronology_checks` identifies conflicts between screening dates and examination dates. Both sets of supplied dates are retained. These conflicts require verification against the original screening records; code cannot reconstruct actual enrolment dates from ordering constraints.
 
-All five scripts completed without errors with the supplied workbook, including the renamed and reordered worksheets. All 40 result workbooks retained identical analysis values; only the input checksum changed. Main-table numeric values were reconciled. The supplementary document and protocol still require review before the package can be certified as covering every reported result.
+All five scripts completed without errors with the supplied final workbook. Main and supplementary table values were checked against the analysis outputs.
 
 ## Licence
 

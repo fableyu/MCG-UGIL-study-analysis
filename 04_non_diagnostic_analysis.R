@@ -63,15 +63,20 @@ stopifnot(unable_swallow == 1L, n_sas == 481L)
 # Buderer precision-based sample-size calculation.
 prevalence <- .16
 sensitivity <- .95
+specificity <- .90
 margin <- .05
 dropout <- .05
 minimum_n <- ceiling(qnorm(.975)^2 * sensitivity * (1 - sensitivity) /
                        (margin^2 * prevalence))
+minimum_specificity_n <- ceiling(qnorm(.975)^2 * specificity * (1 - specificity) /
+                                  (margin^2 * (1 - prevalence)))
 target_n <- ceiling(minimum_n / (1 - dropout))
 sample_size <- data.frame(
   Item = c("Expected prevalence", "Expected sensitivity", "CI margin", "Dropout allowance",
-           "Minimum analysable N", "Target enrolment N"),
-  Value = c(prevalence, sensitivity, margin, dropout, minimum_n, target_n))
+           "Minimum analysable N", "Target enrolment N",
+           "Expected specificity", "Minimum N for specificity"),
+  Value = c(prevalence, sensitivity, margin, dropout, minimum_n, target_n,
+            specificity, minimum_specificity_n))
 
 # Completion means the recorded normal independent procedure, among all enrolled.
 reason_n <- function(reason) sum(withdrawn$Reason == reason)
@@ -142,8 +147,10 @@ for (step in other_steps) procedural_records[[step]] <- "Completed"
 procedural_records$`Water intake` <- ifelse(water_low,"<500 mL",
   ifelse(water_mid,"500-<700 mL",">=700 mL"))
 procedural_records$`Postural manoeuvres` <- ifelse(posture_bad,"Non-standard","As prescribed")
-procedural_records$`Response to water guidance` <- "No deviation recorded"
-procedural_records$Derivation <- "Derived from overall procedural status under author-confirmed rule"
+# Investigators confirmed against individual records that all participants
+# received and followed the AI water prompt.
+procedural_records$`Response to water guidance` <- "Completed as prompted"
+procedural_records$Derivation <- "Overall-status coding and author-confirmed individual AI prompt records"
 procedural_steps <- do.call(rbind, c(
   lapply(other_steps, function(step) step_rows(step, c("Success", "Fail"),
     c(sum(procedural_records[[step]] == "Completed"),sum(procedural_records[[step]] != "Completed")))),
@@ -152,8 +159,10 @@ procedural_steps <- do.call(rbind, c(
        step_rows("Adherence to prescribed postural manoeuvres",
                  c("Completed as prescribed", "Completed with non-standard postural manoeuvres", "Not completed"),
                  c(sum(!posture_bad), sum(posture_bad), 0L)),
-       step_rows("Response to water guidance", "No deviation recorded",
-                 sum(procedural_records$`Response to water guidance` == "No deviation recorded")))))
+       step_rows("Response to water guidance",
+                 c("Completed as prompted", "Not completed despite prompting", "No prompt issued"),
+                 vapply(c("Completed as prompted", "Not completed despite prompting", "No prompt issued"),
+                   function(x) sum(procedural_records$`Response to water guidance` == x), integer(1))))))
 protocol_deviations <- data.frame(
   Type = c("Any protocol deviation", "Non-standard postural manoeuvres", "Inadequate water intake", "Both types"),
   N = c(sum(water_low | water_mid | posture_bad), sum(posture_bad),
@@ -178,14 +187,17 @@ examination_duration <- rbind(
   time_summary("Stomach", exam_time[[grep("^stomach", names(exam_time), value = TRUE)[1]]]),
   time_summary("Small intestine", exam_time[[grep("^small intestine", names(exam_time), value = TRUE)[1]]], TRUE))
 stopifnot(identical(examination_duration$N, c(475L,475L,420L)))
-ogd_interval <- as.numeric(difftime(baseline$`EGD examination time`,
-                                    baseline$`MCG examination time`, units = "mins"))
+# Accept the current OGD header and the legacy EGD spelling.
+ogd_column <- intersect(c("OGD examination time", "EGD examination time"), names(baseline))
+if (length(ogd_column) != 1L) stop("Expected one OGD examination time column (OGD or EGD).")
+ogd_time <- baseline[[ogd_column]]
+ogd_interval <- as.numeric(difftime(ogd_time, baseline$`MCG examination time`, units = "mins"))
 stopifnot(length(ogd_interval) == n_fas, all(is.finite(ogd_interval)), all(ogd_interval >= 0))
 # Keep both dates as supplied. Report chronology conflicts for source verification.
 screening_date <- enrolled$Date[match(baseline$Id,enrolled_ids)]
 chronology <- data.frame(ID=baseline$Id, Screening_date=as.Date(screening_date),
   MCG_date=as.Date(baseline$`MCG examination time`),
-  OGD_date=as.Date(baseline$`EGD examination time`))
+  OGD_date=as.Date(ogd_time))
 chronology$MCG_before_screening <- chronology$MCG_date < chronology$Screening_date
 chronology$Different_calendar_date <- chronology$MCG_date != chronology$Screening_date
 ogd_interval_summary <- data.frame(
@@ -225,8 +237,8 @@ satisfaction_tests <- data.frame(
 # Table S8: reproduce the supplied recorded-day summary and its t-based interval.
 days <- baseline[[grep("Capsule Elimination Time", names(baseline), value = TRUE)[1]]]
 stopifnot(all(is.finite(days)), all(days > 0))
-# Two notes identify unobserved natural expulsion. Their recorded values remain
-# unchanged. The original all-participant mean is retained pending source review.
+# Supplementary Methods includes the last bowel movement before radiography
+# as the estimated excretion time for the two unobserved-expulsion records.
 not_observed <- grepl("not observed", baseline$note, ignore.case=TRUE)
 excretion_levels <- c("Within 24 hours", "24-48 hours", "48-72 hours", ">72 hours",
                       "Excretion not observed but confirmed by abdominal radiography")
@@ -294,8 +306,8 @@ write_xlsx(list(
   Analysis_notes = data.frame(Item=c("Procedural steps","Response to water guidance",
     "Excretion mean denominator","Chronology checks"),
     Definition=c("Derived from overall status under author-confirmed rule; not independent step observations",
-      "No deviation recorded does not establish whether a prompt was issued",
-      "Original all-participant recorded-day calculation retained; two proxy-time notes require definition review",
+      "All participants received and followed prompts, confirmed by investigators against individual source records",
+      "All participants; last bowel movement before radiography estimates excretion time for two unobserved records, per Supplementary Methods",
       "Supplied dates retained; discrepancies require original source verification"))),
   file.path(output, "non_diagnostic_results.xlsx"))
 writeLines(capture.output(sessionInfo()), file.path(output, "sessionInfo.txt"))
