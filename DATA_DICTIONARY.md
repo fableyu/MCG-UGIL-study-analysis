@@ -36,7 +36,7 @@ The Excel workbook is the sole analysis input. Worksheet order and leading numer
 
 `2.lesion record` contains 798 records across 475 participants. Fields are `ID`, within-participant `Lesion` label, `Manual_Result`, `Manual vs OGD`, `OGD_Result`, `OGD vs AI`, `AI_keyframe_reading_Result`, and `Binary classification in subgroup analysis`.
 
-`Consistent`/`Inconsistent` are adjudicated concordance labels. The clinically important classification is read from the source workbook. Six records lack a within-participant lesion label but have complete diagnostic fields; the supplied analysis retains them. Lesion size and oesophagitis grade are not separate fields in this workbook.
+`Consistent`/`Inconsistent` are adjudicated concordance labels. The clinically important classification is read from the source workbook. Each record has a within-participant lesion label. Lesion size and oesophagitis grade are not separate fields in this workbook.
 
 ## Reading, visualisation and examination time
 
