@@ -1,6 +1,5 @@
 # MCG: diagnostic performance against OGD.
 # Usage: Rscript 01_primary_analysis.R input.xlsx [output_directory]
-# This file also supplies shared functions to the other analysis scripts.
 
 suppressPackageStartupMessages({
   library(readxl)
@@ -28,16 +27,13 @@ homece_init <- function() {
   list(raw=raw, output=output)
 }
 
-# Worksheet numbering and surrounding spaces do not change a sheet's identity.
 read_workbook_sheet <- function(sheet, id_col="ID", pattern="^[0-9]{5}$") {
   sheets <- readxl::excel_sheets(rawdata_path)
-  # Worksheet numbering is cosmetic; require a unique matching sheet label.
   sheet_key <- function(x) trimws(sub("^[0-9]+[.]?[[:space:]]*", "", trimws(x)))
   matches <- sheets[sheet_key(sheets) == sheet_key(sheet)]
   if (length(matches) != 1L) stop("Missing or ambiguous worksheet: ", sheet)
   x <- readxl::read_excel(rawdata_path, sheet=matches, .name_repair="minimal")
   names(x) <- trimws(names(x))
-  # Reading-time headers may explicitly include their unchanged minute unit.
   if (sheet_key(sheet) == "reading time")
     names(x) <- sub("^(manual reading|AI keyframe reading) [(]min[)]$", "\\1", names(x))
   if (sum(names(x) == id_col) != 1L) stop("Missing or duplicate ID column in sheet: ", sheet)
@@ -48,11 +44,8 @@ read_workbook_sheet <- function(sheet, id_col="ID", pattern="^[0-9]{5}$") {
   x
 }
 
-# Participant IDs are five-character strings; rows without IDs are excluded.
 read_homece <- function(sheet, id_col="ID") read_workbook_sheet(sheet, id_col)
 
-
-# Delta-method kappa interval for duodenal analyses.
 kappa_multinomial <- function(tp, fn, fp, tn) {
   counts <- c(tp, fn, fp, tn); n <- sum(counts)
   stopifnot(n > 0, all(counts >= 0))
@@ -72,7 +65,6 @@ kappa_multinomial <- function(tp, fn, fp, tn) {
   c(Estimate=k, CI_low=max(-1,k-1.96*se), CI_high=min(1,k+1.96*se))
 }
 
-# Overall binary analysis excludes normal findings and superficial/chronic gastritis.
 negative_terms <- c("No lesion detected", "Superficial gastritis/chronic gastritis")
 is_pos <- function(x) !is.na(x) & !(x %in% negative_terms)
 
@@ -84,8 +76,6 @@ wilson <- function(x, n) {
   c(max(0, ctr - mar), min(1, ctr + mar))
 }
 
-# Proportions use Wilson intervals. Kappa intervals use the Wald approximation,
-# except where the analysis specifies the multinomial delta method.
 diagnostic_metrics <- function(ref, test, method, kappa_method = "wald") {
   stopifnot(length(ref)==length(test), length(ref)>0, all(ref %in% 0:1), all(test %in% 0:1))
   tp <- sum(ref == 1 & test == 1); fn <- sum(ref == 1 & test == 0)
@@ -111,7 +101,6 @@ diagnostic_metrics <- function(ref, test, method, kappa_method = "wald") {
   )
 }
 
-
 classify_site <- function(txt) {
   if (grepl("Duoden", txt, ignore.case = TRUE)) return("Duodenum")
   if (grepl("Oesophag|Barrett|hiatal hernia", txt, ignore.case = TRUE)) return("Oesophagus")
@@ -126,9 +115,6 @@ site_of <- function(e, m, a) {
   "Other"
 }
 
-
-# Read and harmonise the final lesion table for patient-level comparisons.
-# Six records have no within-patient lesion label; their diagnoses are complete.
 read_analysis_lesions <- function() {
   x <- read_homece("1.lesion record")
   required <- c("ID", "Lesion", "OGD_Result", "Manual_Result", "Manual vs OGD",
@@ -161,7 +147,6 @@ if (sys.nframe() == 0L) {
   dir4 <- file.path(root, "paired_input")
   for (p in c(dir0, dir1, dirs, dir2, dir3, dir4)) dir.create(p, recursive = TRUE, showWarnings = FALSE)
 
-  # Harmonise concordant diagnoses once, using the shared loading function.
   dat <- read_analysis_lesions()
 
   write_xlsx(dat, file.path(dir0, "analysis_lesion_records.xlsx"))
@@ -179,8 +164,6 @@ if (sys.nframe() == 0L) {
   stopifnot(length(entered_ids)==420L,length(excluded_ids)==55L)
   write_xlsx(list(Included=data.frame(ID=entered_ids),Excluded=data.frame(ID=excluded_ids)),file.path(root,"duodenal_population_audit.xlsx"))
 
-  # A patient is positive if any eligible lesion is positive. Participants with no
-  # lesion in an organ remain in that organ's denominator and are coded negative.
   patient_binary <- function(x, ids) {
     stopifnot(!missing(ids), !anyDuplicated(ids), all(ids %in% all_ids))
     base <- tibble(ID = ids)
@@ -208,8 +191,6 @@ if (sys.nframe() == 0L) {
   write_xlsx(list(Contingency = a0$contingency, Metrics = a0$metrics), file.path(dir1, "per-patient accuracy_ai.xlsx"))
 
   dat$Site <- mapply(site_of, dat$OGD_Result, dat$Manual_Result, dat$AI_keyframe_reading_Result)
-  # The primary duodenal analysis retains all 475 participants. For 55 non-entry
-  # examinations, the capsule result is negative; the secondary PPS includes 420.
   site_map <- c("Stomach" = "stomach", "Duodenum" = "duodenum", "Oesophagus" = "oesophagus")
   organ_contingencies <- list(); organ_metrics <- list()
   for (s in names(site_map)) {
@@ -305,8 +286,6 @@ if (sys.nframe() == 0L) {
                   Manual_duodenal_PPS=lp_manual_pps,AI_duodenal_PPS=lp_ai_pps),
              file.path(dir2,"per_patient_analysis_complete.xlsx"))
 
-  # Lesion matching follows the adjudicated concordance columns. A discordant
-  # OGD-positive record contributes an FN; an OGD-negative capsule call is an FP.
   per_lesion <- function(x, group) {
     calc <- function(method_col, cons_col, label) {
       rp <- is_pos(x$OGD_Result); called <- is_pos(x[[method_col]])
