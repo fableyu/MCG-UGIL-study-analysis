@@ -1,6 +1,5 @@
 # MCG: paired comparison of AI-assisted and manual reading against OGD.
 # Usage: Rscript 03_reading_mode_comparison.R input.xlsx [output_directory]
-# Differences are AI minus manual. Proportion differences are on the 0-1 scale.
 
 self <- sub("^--file=", "", commandArgs()[grepl("^--file=", commandArgs())][1])
 self <- gsub("~+~", " ", self, fixed=TRUE)
@@ -19,9 +18,6 @@ mc <- lesions %>% group_by(ID) %>%
   rename(id=ID) %>% arrange(id)
 stopifnot(nrow(mc) == 475L, !anyDuplicated(mc$id), !anyNA(mc))
 
-# Paired Wald intervals; absolute non-inferiority margin: 5 percentage points.
-# NI_p_value tests H0: AI - manual <= -0.05 (one-sided). NI uses the lower
-# bound of the two-sided 95% interval, equivalent to a one-sided 2.5% rule.
 paired_ni <- function(xa, xm, delta = .05) {
   b <- sum(xa == 1 & xm == 0); cc <- sum(xa == 0 & xm == 1); n <- length(xa)
   d <- (b - cc) / n; se <- sqrt((b + cc - (b - cc)^2 / n) / n^2)
@@ -30,8 +26,6 @@ paired_ni <- function(xa, xm, delta = .05) {
          NI_p = if (se == 0) ifelse(d + delta > 0, 0, 1) else 1 - pnorm((d + delta) / se),
          NI = lo > -delta)
 }
-# Predictive-value CIs resample participants jointly (2,000 samples, seed 1).
-# Their two-sided P values use generalised score tests from DTComPair.
 paired_pv <- function(kind, nboot = 2000, delta = .05) {
   set.seed(1)
   f <- if (kind == "PPV") function(t, z) if (any(t == 1)) mean(z[t == 1] == 1) else NA_real_
@@ -49,7 +43,6 @@ ni <- bind_rows(paired_ni(mc$ai[pos], mc$manual[pos]), paired_ni(1 - mc$ai[neg],
                 paired_pv("PPV"), paired_pv("NPV"))
 dtc <- DTComPair::tab.paired(d = mc$ogd, y1 = mc$manual, y2 = mc$ai)
 pv <- DTComPair::pv.gs(dtc)
-# Exact two-sided McNemar tests use discordant pairs only.
 mcnemar_exact_p <- function(y1, y2) {
   b <- sum(y1 == 1 & y2 == 0); c <- sum(y1 == 0 & y2 == 1)
   if (b + c == 0) return(1)
@@ -70,7 +63,6 @@ summary <- tibble(Metric = metrics,
 cont <- bind_rows(diagnostic_metrics(mc$ogd, mc$manual, "Manual")$contingency,
                   diagnostic_metrics(mc$ogd, mc$ai, "AI keyframe reading")$contingency)
 
-# Kappa differences account for dependence between both tests in each patient.
 paired_kappa <- function(ref, manual, ai) {
   stopifnot(length(ref) == length(manual), length(ref) == length(ai),
             length(ref) > 1, all(ref %in% 0:1), all(manual %in% 0:1), all(ai %in% 0:1))
@@ -115,7 +107,6 @@ for (nm in c("Metric", "Manual", "AI_keyframe", "Diff", "CI_low", "CI_high",
 krow$CI_95 <- sprintf("(%.4f, %.4f)", k$result$CI_low, k$result$CI_high)
 summary <- bind_rows(summary, krow)
 
-# Reading times are paired by participant, with no deletion of incomplete pairs.
 reading <- read_homece("3.reading time", "id")
 stopifnot(nrow(reading) == 475L, !anyDuplicated(reading$id),
           setequal(reading$id, mc$id),
