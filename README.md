@@ -26,12 +26,13 @@ Package installation requires internet access. The analyses then run locally wit
 
 ## Input data
 
-The sole analysis input is the study Excel workbook, `1.HomeCe_RawData.xlsx`. The local copy with an added derived procedural-steps sheet is also supported. Keep the participant IDs as five-character strings and retain the column labels.
+The analysis input is the study Excel workbook, `1.HomeCe_RawData.xlsx`. Keep participant IDs as five-character strings and retain the column labels.
 
 The required worksheets are:
 
 - `0.screening log`
 - `1baseline+satisfaction+followup`
+- `1.procedural steps`
 - `1.Withdraw or excluded list`
 - `1.Adverse events`
 - `2.lesion record`
@@ -40,6 +41,8 @@ The required worksheets are:
 - `5.Examination time of MCG`
 
 Participant-level data are not included in this code package.
+
+Procedural steps are derived from the recorded self-administration status. Responses to water guidance are read from `1.procedural steps`.
 
 ## Run
 
@@ -63,23 +66,13 @@ Quote paths containing spaces. Omit the second argument to write results to `res
 
 ## Statistical conventions
 
-- Overall diagnostic positives exclude no lesion and superficial/chronic gastritis. Disease-specific analyses still report superficial/chronic gastritis as its own outcome.
-- Proportion CIs for diagnostic performance use Wilson intervals. Individual kappa intervals retain the supplied Wald approximation, except duodenal analyses, which use the multinomial delta method. Paired kappa differences use the joint multinomial delta method.
-- Sensitivity, specificity and accuracy differences use paired Wald CIs and exact two-sided McNemar tests. PPV and NPV differences use participant bootstrap percentile CIs with 2,000 resamples and seed 1; their two-sided tests use `DTComPair::pv.gs`.
-- Non-inferiority uses an absolute margin of 0.05. A lower two-sided 95% CI above -0.05 establishes non-inferiority; one-sided P values are reported separately from two-sided reading-mode comparison P values.
-- Paired reading times use a Wilcoxon signed-rank test with normal approximation and continuity correction. Comfort comparisons use exact paired sign/McNemar tests as labelled in the output.
-- Landmark and satisfaction proportion intervals use exact Clopper-Pearson intervals. Continuous summaries use R's default type-7 quantiles; the recorded excretion-day mean uses a t-based interval.
-
-## Data provenance and current checks
-
-Routine procedural steps are derived from the recorded self-administration status under the author-confirmed coding rule. Investigators separately confirmed from individual records that all participants received and followed the AI water prompts.
-
-Excretion-time summaries follow Supplementary Methods, including the estimated time from the last bowel movement before radiography for the two unobserved-expulsion records.
-
-`Chronology_checks` identifies conflicts between screening dates and examination dates. Both sets of supplied dates are retained. These conflicts require verification against the original screening records; code cannot reconstruct actual enrolment dates from ordering constraints.
-
-All five scripts completed without errors with the supplied final workbook. Main and supplementary table values were checked against the analysis outputs.
+1. A participant was classified as UGIL-positive if upper gastrointestinal lesions were detected. A participant was classified as UGIL-negative if no lesions were detected or if chronic superficial gastritis was the only finding.
+2. Proportion CIs for diagnostic performance use Wilson intervals. Individual kappa intervals use the Wald approximation, except duodenal analyses, which use the multinomial delta method. Paired kappa differences use the joint multinomial delta method.
+3. Sensitivity, specificity and accuracy differences use paired Wald CIs and exact two-sided McNemar tests. PPV and NPV differences use participant bootstrap percentile CIs with 2,000 resamples and seed 1; their two-sided tests use `DTComPair::pv.gs`.
+4. Non-inferiority uses an absolute margin of 0.05. A lower two-sided 95% CI above -0.05 establishes non-inferiority; one-sided P values are reported separately from two-sided reading-mode comparison P values.
+5. Paired reading times use a Wilcoxon signed-rank test with normal approximation and continuity correction. Comfort comparisons use exact paired sign/McNemar tests as labelled in the output.
+6. Landmark and satisfaction proportion intervals use exact Clopper-Pearson intervals. Continuous summaries use R's default type-7 quantiles; the recorded excretion-day mean uses a t-based interval.
 
 ## Licence
 
-No open-source licence has been assigned. A code licence should be selected before public release. Data licensing is a separate decision.
+No licence has been assigned.
