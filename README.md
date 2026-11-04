@@ -26,7 +26,7 @@ Package installation requires internet access. The analyses then run locally wit
 
 ## Input data
 
-The analysis input is the study Excel workbook, `1.HomeCe_RawData.xlsx`. Keep participant IDs as five-character strings and retain the column labels.
+The analysis input is the study Excel workbook, `1.HomeCe_RawData.xlsx`.
 
 The required worksheets are:
 
