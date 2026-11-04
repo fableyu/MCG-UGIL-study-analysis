@@ -9,6 +9,7 @@ rawdata_path <- config$raw
 
 output_dir <- file.path(config$output, "subgroups")
 dir.create(output_dir, recursive=TRUE, showWarnings=FALSE)
+# Load data and define indication groups.
 lesions <- read_analysis_lesions()
 baseline <- read_homece("0baseline+satisfaction+followup", "Id")
 stopifnot(nrow(baseline) == 475L, !anyDuplicated(baseline$Id),
@@ -30,6 +31,7 @@ baseline <- baseline |>
                            TRUE ~ 'Symptom-labelled'))
 stopifnot(setequal(unique(baseline$Group), c('Surveillance','Symptom-labelled','Health screening')))
 
+# Define patient-level outcomes for all and clinically important UGILs.
 any_patient <- lesions |>
   group_by(ID) |>
   summarise(OGD_Result = as.integer(any(is_pos(OGD_Result))),
@@ -67,6 +69,7 @@ important_patient <- lesions |>
 stopifnot(nrow(any_patient) == 475L, nrow(important_patient) == 475L,
           setequal(any_patient$ID, important_patient$ID))
 
+# Subgroup diagnostic performance and export results.
 metric <- function(group,name,num,den,kappa=FALSE,est=NA_real_,ci=c(NA_real_,NA_real_)) {
   if (!kappa) {est <- if (den > 0L) num/den else NA_real_; ci <- wilson(num,den)}
   display <- if (is.na(est)) 'Not estimable' else if (kappa && is.na(ci[1]))
