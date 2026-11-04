@@ -10,6 +10,7 @@ rawdata_path <- config$raw
 if (!requireNamespace("DTComPair", quietly=TRUE)) stop("Install the DTComPair package.")
 output_dir <- file.path(config$output, "reading_mode_comparison")
 dir.create(output_dir, recursive=TRUE, showWarnings=FALSE)
+# Prepare paired manual and AI-assisted diagnostic results.
 lesions <- read_analysis_lesions()
 mc <- lesions %>% group_by(ID) %>%
   summarise(ogd=as.integer(any(is_pos(OGD_Result))),
@@ -18,6 +19,7 @@ mc <- lesions %>% group_by(ID) %>%
   rename(id=ID) %>% arrange(id)
 stopifnot(nrow(mc) == 475L, !anyDuplicated(mc$id), !anyNA(mc))
 
+# Compare diagnostic performance and assess non-inferiority.
 paired_ni <- function(xa, xm, delta = .05) {
   b <- sum(xa == 1 & xm == 0); cc <- sum(xa == 0 & xm == 1); n <- length(xa)
   d <- (b - cc) / n; se <- sqrt((b + cc - (b - cc)^2 / n) / n^2)
@@ -107,6 +109,7 @@ for (nm in c("Metric", "Manual", "AI_keyframe", "Diff", "CI_low", "CI_high",
 krow$CI_95 <- sprintf("(%.4f, %.4f)", k$result$CI_low, k$result$CI_high)
 summary <- bind_rows(summary, krow)
 
+# Compare paired reading times and export results.
 reading <- read_homece("3.reading time", "id")
 stopifnot(nrow(reading) == 475L, !anyDuplicated(reading$id),
           setequal(reading$id, mc$id),
