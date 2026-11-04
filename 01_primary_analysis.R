@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
   library(writexl)
 })
 
+# Data loading, diagnostic metrics and confidence intervals.
 script_path <- function() {
   arg <- commandArgs()[grepl("^--file=", commandArgs())]
   if (length(arg) != 1L) stop("Run this analysis with Rscript.")
@@ -133,6 +134,7 @@ read_analysis_lesions <- function() {
   x
 }
 
+# Patient-level diagnostic analyses: overall, by organ and by disease.
 if (sys.nframe() == 0L) {
   config <- homece_init()
   rawdata_path <- config$raw
@@ -286,6 +288,7 @@ if (sys.nframe() == 0L) {
                   Manual_duodenal_PPS=lp_manual_pps,AI_duodenal_PPS=lp_ai_pps),
              file.path(dir2,"per_patient_analysis_complete.xlsx"))
 
+  # Lesion-level sensitivity, precision and F1 score.
   per_lesion <- function(x, group) {
     calc <- function(method_col, cons_col, label) {
       rp <- is_pos(x$OGD_Result); called <- is_pos(x[[method_col]])
