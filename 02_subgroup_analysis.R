@@ -1,6 +1,5 @@
-# MCG: clinically important lesions and indication subgroups (manual reading).
+# MCG: clinically important lesions and indication subgroups.
 # Usage: Rscript 02_subgroup_analysis.R input.xlsx [output_directory]
-# Group membership and clinical importance are read from the source workbook.
 
 self <- sub("^--file=", "", commandArgs()[grepl("^--file=", commandArgs())][1])
 self <- gsub("~+~", " ", self, fixed=TRUE)
@@ -92,7 +91,6 @@ calculate <- function(x,group) {
   two_class_margins <- tp+fn > 0L && tn+fp > 0L && tp+fp > 0L && tn+fn > 0L
   k <- if (two_class_margins && pe < 1) (po-pe)/(1-pe) else NA_real_
   se <- if (two_class_margins && pe < 1) sqrt(po*(1-po)/(n*(1-pe)^2)) else NA_real_
-  # Suppress the Wald interval at perfect agreement, where it collapses to a point.
   kci <- if (is.na(k) || po == 1) c(NA_real_,NA_real_) else c(max(-1,k-1.96*se),min(1,k+1.96*se))
   metrics <- bind_rows(
     metric(group,'Sensitivity',tp,tp+fn),metric(group,'Specificity',tn,tn+fp),
@@ -122,8 +120,6 @@ run_audit <- data.frame(Item=c('Source workbook','Source MD5','Lesion rows','Pai
           'Wald CI suppressed when agreement is perfect; kappa requires both classes in both margins',sum(baseline$Group=='Surveillance'),sum(baseline$Group=='Symptom-labelled'),sum(baseline$Group=='Health screening'),as.character(getRversion())),
   check.names=FALSE)
 
-# The pooled clinically important analysis and its indication strata use the
-# same diagnosis map and the same patient-level aggregation rule.
 pooled <- calculate(important_patient, "Clinically important UGIL")
 write_xlsx(list(Contingency=pooled$cont, Metrics=pooled$metrics,
                 Patient_results=important_patient,
