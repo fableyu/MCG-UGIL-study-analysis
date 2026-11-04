@@ -8,7 +8,7 @@
 | --- | --- |
 | `0.screening log` | Screening date, enrolment status, exclusion reason and enrolment ID. |
 | `1baseline+satisfaction+followup` | Demographics, indication, self-administration, satisfaction, capsule excretion and examination timestamps. |
-| `1.procedural steps` | Routine step completion derived from overall procedural status, water intake, posture and response to water guidance. |
+| `1.procedural steps` | Procedural step completion, water intake, posture and response to water guidance. |
 | `1.Withdraw or excluded list` | Withdrawal or exclusion reasons and available participant characteristics. |
 | `1.Adverse events` | Event type, severity, relationship, management and outcome. |
 | `2.lesion record` | Lesion labels, manual and AI keyframe diagnoses, OGD diagnoses, concordance and clinical importance. |
