@@ -1,6 +1,4 @@
 # Run all MCG study analyses from a single Excel workbook.
-# Required packages: readxl, dplyr, writexl, and DTComPair.
-# Install once with: install.packages(c("readxl", "dplyr", "writexl", "DTComPair"))
 # Usage: Rscript 00_run_all.R input.xlsx [output_directory]
 
 args <- commandArgs(trailingOnly = TRUE)
